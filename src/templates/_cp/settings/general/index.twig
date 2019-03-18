@@ -1,0 +1,50 @@
+{% extends "stripe/_cp/settings/_layout" %}
+{% import "_includes/forms" as forms %}
+
+{% set configOverrideMessage %}
+    <span class="config-override">[Config Override]</span>
+{% endset %}
+
+{% set config = craft.app.config.getConfigFromFile('stripe') %}
+
+{% set content %}
+    <input type="hidden" name="action" value="{{ baseActionPath }}/save">
+    {{ redirectInput(baseCpPath) }}
+
+    {% set connecitonOptions = {(null): '-- Select Connection --'|t('stripe')} %}
+    {% for connection in connections %}
+        {% set connecitonOptions = connecitonOptions|merge({
+            (connection.handle): connection.name
+        }) %}
+    {% endfor %}
+
+    {% set connectionOverride = attribute(config, 'defaultConnection') is defined %}
+    {{ forms.selectField({
+        label: "Default Connection"|t('stripe'),
+        instructions: "The default connection is used when an API request is made without a specified connection." ~ (connectionOverride ? configOverrideMessage : '') |t('stripe'),
+        id: 'defaultConnection',
+        name: 'defaultConnection',
+        value: settings.defaultConnection,
+        options: connecitonOptions,
+        required: true
+    }) }}
+
+    {% set cacheOptions = {(null): '-- Select Cache --'|t('stripe')} %}
+    {% for key, config in craft.stripe.cache.all %}
+        {% set cacheOptions = cacheOptions|merge({
+            (key): key
+            }) %}
+    {% endfor %}
+
+    {% set cacheOverride = attribute(config, 'defaultCache') is defined %}
+    {{ forms.selectField({
+        label: "Default Cache"|t('stripe'),
+        instructions: "The default cache is used when an API request is made without a specified cache." ~ (cacheOverride ? configOverrideMessage : '') |t('stripe'),
+        id: 'defaultCache',
+        name: 'defaultCache',
+        value: settings.defaultCache,
+        options: cacheOptions,
+        required: true
+    }) }}
+
+{% endset %}

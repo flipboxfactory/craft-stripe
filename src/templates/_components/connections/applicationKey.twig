@@ -1,0 +1,34 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.textField({
+    label: "API Key"|t('stripe'),
+    instructions: "The Stripe <a href='https://dashboard.stripe.com/account/apikeys'>secret key</a> or <a href='https://dashboard.stripe.com/account/apikeys'>restricted key</a>."|t('stripe'),
+    id: 'apiKey',
+    class: 'code',
+    name: 'apiKey',
+    type: 'password',
+    value: connection.apiKey,
+    errors: connection.getErrors('apiKey'),
+    required: true
+}) }}
+
+{{ forms.textField({
+    label: "Publishable Key"|t('stripe'),
+    instructions: "The Stripe <a href='https://dashboard.stripe.com/account/apikeys'>publishable key</a>."|t('stripe'),
+    id: 'publishableKey',
+    class: 'code',
+    name: 'publishableKey',
+    value: connection.publishableKey,
+    errors: connection.getErrors('publishableKey'),
+    required: true
+}) }}
+
+{{ forms.textField({
+    label: "Version"|t('stripe'),
+    instructions: "The Stripe <a href='https://dashboard.stripe.com/developers'>API version</a>."|t('stripe'),
+    id: 'version',
+    class: 'code',
+    name: 'version',
+    value: connection.version,
+    errors: connection.getErrors('version')
+}) }}

@@ -1,0 +1,53 @@
+{% extends "stripe/_cp/settings/_layout" %}
+
+{% block actionButton %}
+    <div class="buttons right">
+        <a href="{{ url(continueEditingUrl ~ '/new') }}"
+           class="btn submit add icon">{{ "New connection"|t('stripe') }}</a>
+    </div>
+{% endblock %}
+
+{% set content %}
+    <table id="connections" class="data fullwidth collapsible">
+        <thead>
+            <th scope="col">{{ "Name"|t('stripe') }}</th>
+            <th scope="col">{{ "Handle"|t('stripe') }}</th>
+            <th scope="col">{{ "Version"|t('stripe') }}</th>
+            <th scope="col">{{ "Type"|t('stripe') }}</th>
+            <th scope="col">{{ "Default"|t('stripe') }}</th>
+        </thead>
+        <tbody>
+        {% if connections|length %}
+            {% for handle, record in connections %}
+                {% set connection = record.connection %}
+                <tr data-id="{{ record.id }}" data-name="{{ record.handle }}">
+                    <th scope="row" data-title="{{ 'Type'|t('stripe') }}">
+                        <span class="status{% if record.enabled %} enabled{% endif %}"></span>
+                        <a href="{{ url(baseCpPath~'/'~record.id) }}">
+                            {{ record.name }}
+                        </a>
+                    </th>
+                    <th data-title="{{ 'Handle'|t('stripe') }}">
+                        <code>{{ record.handle }}</code>
+                    </th>
+                    <td data-title="{{ 'HubId'|t('stripe') }}">
+                        {{ connection.version }}
+                    </td>
+                    <td data-title="{{ 'Handle'|t('stripe') }}">
+                        {{ connection.displayName() }}
+                    </td>
+                    <td data-title="{{ 'Default'|t('stripe') }}">
+                        <span class="status{% if settings.defaultConnection == record.handle %} enabled{% endif %}"></span>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="3">
+                    {{ "No connections exist yet."|t('stripe') }}
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+{% endset %}
