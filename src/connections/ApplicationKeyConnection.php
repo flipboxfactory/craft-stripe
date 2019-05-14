@@ -28,6 +28,11 @@ class ApplicationKeyConnection extends AbstractSaveableConnection implements Sav
     public $publishableKey;
 
     /**
+     * @var string
+     */
+    public $webhookSigningSecret;
+
+    /**
      * @var string|null
      */
     public $accountId;
@@ -81,6 +86,14 @@ class ApplicationKeyConnection extends AbstractSaveableConnection implements Sav
     /**
      * @inheritdoc
      */
+    public function getWebhookSigningSecret(): string
+    {
+        return $this->webhookSigningSecret;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getVersion()
     {
         return $this->version;
@@ -105,6 +118,7 @@ class ApplicationKeyConnection extends AbstractSaveableConnection implements Sav
                     [
                         'apiKey',
                         'publishableKey',
+                        'webhookSigningSecret',
                         'version'
                     ],
                     'safe',

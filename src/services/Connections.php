@@ -13,6 +13,7 @@ use flipbox\craft\stripe\records\Connection;
 use flipbox\craft\stripe\Stripe as StripePlugin;
 use flipbox\craft\stripe\connections\ConnectionInterface;
 use Stripe\Stripe;
+use yii\helpers\Json;
 
 /**
  * @author Flipbox Factory <hello@flipboxfactory.com>
@@ -24,14 +25,20 @@ use Stripe\Stripe;
 class Connections extends IntegrationConnections
 {
     /**
-     * The default connection handle
-     */
-    const DEFAULT_CONNECTION = 'app';
-
-    /**
      * The override file
      */
     public $overrideFile = 'stripe-connections';
+
+    /**
+     * @inheritDoc
+     */
+    public function init()
+    {
+        parent::init();
+
+        // Apply default connection to Stripe SDK
+        $this->initDefaultConnection();
+    }
 
     /**
      * @inheritdoc
@@ -59,19 +66,29 @@ class Connections extends IntegrationConnections
 
     /**
      * Set's an API Key and API Version to Stripe SDK
-     *
-     * @param string $handle
-     * @return bool
+     * @return void
      */
-    public function setToSDK(string $handle): bool
+    private function initDefaultConnection()
     {
-        if (null === ($connection = $this->find($handle))) {
-            return false;
+        try {
+            if (null === ($connection = $this->find($this->getDefaultConnection()))) {
+                return;
+            }
+
+            Stripe::setApiKey($connection->getApiKey());
+            Stripe::setApiVersion($connection->getVersion());
+        } catch (\Exception $e) {
+
+            StripePlugin::warning(sprintf(
+                "Exception caught while trying to set default connection. Exception: [%s].",
+                (string)Json::encode([
+                    'Trace' => $e->getTraceAsString(),
+                    'File' => $e->getFile(),
+                    'Line' => $e->getLine(),
+                    'Code' => $e->getCode(),
+                    'Message' => $e->getMessage()
+                ])
+            ));
         }
-
-        Stripe::setApiKey($connection->getApiKey());
-        Stripe::setApiVersion($connection->getVersion());
-
-        return true;
     }
 }

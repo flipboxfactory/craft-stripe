@@ -271,14 +271,13 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
         return false;
     }
 
-
     /**
      * @param ElementInterface|Element $element
      * @param string $id
      * @return bool
      * @throws \Throwable
      */
-    protected function addAssociation(
+    public function addAssociation(
         ElementInterface $element,
         string $id
     ) {
@@ -311,7 +310,7 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
      * @param ElementInterface|Element $element
      * @return null|string
      */
-    protected function resolveObjectIdFromElement(
+    public function resolveObjectIdFromElement(
         ElementInterface $element
     ) {
 
@@ -337,5 +336,71 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
         ));
 
         return $objectId;
+    }
+
+    /**
+     * @param int $elementId
+     * @param int|null $siteId
+     * @return bool|false|string|null
+     */
+    public function resolveObjectIdFromElementId(
+        int $elementId,
+        int $siteId = null
+    ) {
+        if (!$objectId = ObjectAssociation::find()
+            ->select(['objectId'])
+            ->elementId($elementId)
+            ->fieldId($this->id)
+            ->siteId(SiteHelper::ensureSiteId($siteId))
+            ->scalar()
+        ) {
+            Stripe::warning(sprintf(
+                "Stripe Object Id association was not found for element '%s'",
+                $elementId
+            ));
+
+            return null;
+        }
+
+        Stripe::info(sprintf(
+            "Stripe Object Id '%s' was found for element '%s'",
+            $objectId,
+            $elementId
+        ));
+
+        return $objectId;
+    }
+
+    /**
+     * @param string $objectId
+     * @param int|null $siteId
+     * @return bool|false|string|null
+     */
+    public function resolveElementIdFromObjectId(
+        string $objectId,
+        int $siteId = null
+    ) {
+        if (!$elementId = ObjectAssociation::find()
+            ->select(['elementId'])
+            ->objectId($objectId)
+            ->fieldId($this->id)
+            ->siteId(SiteHelper::ensureSiteId($siteId))
+            ->scalar()
+        ) {
+            Stripe::warning(sprintf(
+                "Stripe Element Id association was not found for object '%s'",
+                $objectId
+            ));
+
+            return null;
+        }
+
+        Stripe::info(sprintf(
+            "Stripe Element Id '%s' was found for object '%s'",
+            $elementId,
+            $objectId
+        ));
+
+        return $elementId;
     }
 }

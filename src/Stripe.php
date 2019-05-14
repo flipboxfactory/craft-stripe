@@ -20,8 +20,12 @@ use craft\web\View;
 use flipbox\craft\ember\helpers\UrlHelper;
 use flipbox\craft\ember\modules\LoggerTrait;
 use flipbox\craft\psr3\Logger;
+use flipbox\craft\stripe\criteria\Criteria as BaseCriteria;
+use flipbox\craft\stripe\criteria\Criteria;
+use flipbox\craft\stripe\criteria\ResourceBehavior;
 use flipbox\craft\stripe\fields\Customers as ObjectsField;
 use flipbox\craft\stripe\models\Settings as SettingsModel;
+use flipbox\craft\stripe\records\ObjectAssociation;
 use flipbox\craft\stripe\web\twig\variables\Stripe as StripeVariable;
 use Stripe\Stripe as StripeSDK;
 use yii\base\Event;
@@ -59,16 +63,11 @@ class Stripe extends Plugin
             'psr3Logger' => function () {
                 return Craft::createObject([
                     'class' => Logger::class,
-                    'logger' => static::getLogger(),
-                    'category' => self::getLogFileName()
+                    'logger' => Craft::getLogger(),
+                    'category' => self::$category
                 ]);
             }
         ]);
-
-        // Pass logger along to package
-        StripeSDK::setLogger(
-            static::getPsrLogger()
-        );
 
         // Modules
         $this->setModules([
@@ -112,28 +111,21 @@ class Stripe extends Plugin
             [self::class, 'onRegisterCpUrlRules']
         );
 
+        // Make sure we have a table
+        ObjectAssociation::ensureEnvironmentTableExists();
+
+        /*******************************************
+         * BOOTSTRAP SDK
+         *******************************************/
+
         // Logger to Stripe SDK
-        \Stripe\Stripe::setLogger(static::getPsrLogger());
+        StripeSDK::setLogger(static::getPsrLogger());
 
         // Set App Info to Stripe SDK
-        \Stripe\Stripe::setAppInfo(
+        StripeSDK::setAppInfo(
             $this->name ?: $this->getUniqueId(),
             $this->getVersion()
         );
-
-        // Apply connection to Stripe SDK
-        $this->getConnections()->setToSDK(
-            $this->getSettings()->getDefaultConnection()
-        );
-
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getLogFileName(): string
-    {
-        return 'stripe';
     }
 
     /**
@@ -178,6 +170,27 @@ class Stripe extends Plugin
         );
 
         Craft::$app->end();
+    }
+
+
+    /*******************************************
+     * CRITERIA
+     *******************************************/
+
+    /**
+     * @param string $resource
+     * @return Criteria|ResourceBehavior
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function criteria(string $resource): Criteria
+    {
+        return Craft::createObject([
+            'class' => Criteria::class,
+            'as behaviorName' => [
+                'class' => ResourceBehavior::class,
+                'resource' => $resource
+            ]
+        ]);
     }
 
 

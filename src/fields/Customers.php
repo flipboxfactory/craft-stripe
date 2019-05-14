@@ -8,10 +8,8 @@
 
 namespace flipbox\craft\stripe\fields;
 
-use craft\helpers\Json;
-use flipbox\craft\stripe\criteria\Criteria;
+use flipbox\craft\stripe\criteria\CustomerCriteria;
 use flipbox\craft\stripe\Stripe;
-use Psr\Http\Message\ResponseInterface;
 use Stripe\ApiResource;
 use Stripe\Customer;
 
@@ -46,36 +44,39 @@ class Customers extends Objects
     }
 
     /**
-     * @inheritdoc
-     * @return Customer
+     * @param array $payload
+     * @param string|null $id
+     * @return Customer|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \flipbox\craft\integration\exceptions\ConnectionNotFound
      */
     protected function upsertToStripe(
         array $payload,
         string $id = null
     ): ApiResource {
-
-        return (new Criteria([
-            'connection' => $this->getConnection(),
-            'cache' => $this->getCache(),
-            'payload' => $payload,
-            'id' => $id
-        ]))->upsert();
+        return (new CustomerCriteria())
+            ->setField($this)
+            ->setConnection($this->getConnection())
+            ->setCache($this->getCache())
+            ->setPayload($payload)
+            ->setId($id)
+            ->upsert();
     }
 
     /**
-     * @inheritdoc
-     * @return Customer
+     * @param string $id
+     * @return Customer|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \flipbox\craft\integration\exceptions\ConnectionNotFound
-     * @throws \Exception
      */
     public function readFromStripe(
         string $id
     ): ApiResource {
-        return (new Criteria([
-            'connection' => $this->getConnection(),
-            'cache' => $this->getCache(),
-            'id' => $id
-        ]))->read();
+        return (new CustomerCriteria())
+            ->setField($this)
+            ->setConnection($this->getConnection())
+            ->setCache($this->getCache())
+            ->setId($id)
+            ->read();
     }
 }

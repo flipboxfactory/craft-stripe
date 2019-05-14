@@ -15,6 +15,9 @@ use flipbox\craft\stripe\services\Cache;
 use flipbox\craft\stripe\services\Connections;
 use flipbox\craft\stripe\transformers\CreateUpsertPayloadFromElement;
 use flipbox\craft\stripe\transformers\PopulateElementFromResponse;
+use Stripe\Customer;
+use Stripe\Invoice;
+use Stripe\Subscription;
 
 /**
  * @author Flipbox Factory <hello@flipboxfactory.com>
@@ -25,7 +28,7 @@ class Settings extends Model
     /**
      * @var string
      */
-    public $environmentTablePostfix = '';
+    public $environmentTableSuffix = '';
 
     /**
      * @var string
@@ -35,7 +38,27 @@ class Settings extends Model
     /**
      * @var string
      */
-    private $defaultConnection = Connections::DEFAULT_CONNECTION;
+    private $defaultConnection = Connections::CONNECTION;
+
+    /**
+     * @var string
+     */
+    public $currencyCode = 'USD';
+
+    /**
+     * An array or resources that are available via craft.stripe.criteria.x where 'x' is the
+     * resource key.
+     *
+     * @return array
+     */
+    public function getCriteriaResources(): array
+    {
+        return [
+            'subscriptions' => Subscription::class,
+            'invoices' => Invoice::class,
+            'customers' => Customer::class
+        ];
+    }
 
     /**
      * @param string $key

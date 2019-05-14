@@ -11,11 +11,11 @@ namespace flipbox\craft\stripe\records;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Component as ComponentHelper;
 use flipbox\craft\integration\records\IntegrationConnection;
+use flipbox\craft\stripe\connections\ConnectionInterface;
 use flipbox\craft\stripe\connections\SavableConnectionInterface;
 use flipbox\craft\stripe\Stripe;
 use flipbox\craft\stripe\validators\ConnectionValidator;
 use Flipbox\Skeleton\Helpers\ObjectHelper;
-use flipbox\craft\stripe\connections\ConnectionInterface;
 
 /**
  * @author Flipbox Factory <hello@flipboxfactory.com>
@@ -109,7 +109,10 @@ class Connection extends IntegrationConnection
         $connection = $this->getConnection();
 
         if ($connection instanceof SavableConnectionInterface) {
-            $connection->afterSave($insert, (array)ArrayHelper::getValue($changedAttributes, 'settings', []) ?: []);
+            $connection->afterSave(
+                $insert,
+                (array)ArrayHelper::getValue($changedAttributes, 'settings', []) ?: []
+            );
         }
 
         parent::afterSave($insert, $changedAttributes);

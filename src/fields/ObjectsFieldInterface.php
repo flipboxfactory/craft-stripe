@@ -10,7 +10,6 @@ namespace flipbox\craft\stripe\fields;
 
 use craft\base\ElementInterface;
 use craft\base\FieldInterface;
-use Psr\Http\Message\ResponseInterface;
 use Stripe\ApiResource;
 
 /**
@@ -19,11 +18,6 @@ use Stripe\ApiResource;
  */
 interface ObjectsFieldInterface extends FieldInterface
 {
-    /**
-     * @return string
-     */
-    public function getObjectLabel(): string;
-
     /**
      * @param string $id
      * @return ApiResource

@@ -8,10 +8,9 @@
 
 namespace flipbox\craft\stripe\records;
 
-use Craft;
+use flipbox\craft\integration\records\EnvironmentalTableTrait;
 use flipbox\craft\integration\records\IntegrationAssociation;
-use flipbox\craft\stripe\criteria\ObjectCriteria;
-use flipbox\craft\stripe\fields\Customers;
+use flipbox\craft\stripe\fields\Objects;
 use flipbox\craft\stripe\migrations\ObjectAssociations;
 use flipbox\craft\stripe\Stripe;
 
@@ -24,82 +23,48 @@ use flipbox\craft\stripe\Stripe;
  */
 class ObjectAssociation extends IntegrationAssociation
 {
-    /**
-     * @inheritdoc
-     */
-    const TABLE_ALIAS = 'stripe_object_associations';
+    use EnvironmentalTableTrait;
 
     /**
      * @inheritdoc
-     * @throws \Throwable
      */
-    public function __construct(array $config = [])
-    {
-        $this->ensureTableExists();
-        parent::__construct($config);
-    }
-
+    const TABLE_ALIAS = 'stripe_objects';
 
     /**
+     * @inheritdoc
      * @throws \Throwable
-     */
-    public function ensureTableExists()
-    {
-        if (!in_array(
-            Craft::$app->getDb()->tablePrefix . static::tableAlias(),
-            Craft::$app->getDb()->getSchema()->tableNames,
-            true
-        )) {
-            $this->createTable();
-        }
-    }
-
-    /**
-     * @return bool
-     * @throws \Throwable
-     */
-    private function createTable(): bool
-    {
-        ob_start();
-        (new ObjectAssociations())->up();
-        ob_end_clean();
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
      */
     public static function tableAlias()
     {
-        return parent::tableAlias() . Stripe::getInstance()->getSettings()->environmentTablePostfix;
+        return static::environmentTableAlias();
     }
 
     /**
-     * @param array $criteria
-     * @return \Psr\Http\Message\ResponseInterface|null
-     * @throws \flipbox\craft\ember\exceptions\RecordNotFoundException
-     * @throws \yii\base\InvalidConfigException
+     * @inheritdoc
      */
-    public function getObject(array $criteria = [])
+    protected static function environmentTableAlias()
     {
+        return static::TABLE_ALIAS . Stripe::getInstance()->getSettings()->environmentTableSuffix;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected static function createEnvironmentTableMigration()
+    {
+        return new ObjectAssociations();
+    }
+
+    /**
+     * @return \Stripe\ApiResource|null
+     */
+    public function getObject()
+    {
+        /** @var Objects $field */
         if (null === ($field = $this->getField())) {
             return null;
         }
 
-        if (!$field instanceof Customers) {
-            return null;
-        }
-
-        $resource = new ObjectCriteria([
-            'connection' => $field->getConnection(),
-            'cache' => $field->getCache()
-        ]);
-
-        // Can't override these...
-        $criteria['id'] = $this->objectId ?: self::DEFAULT_ID;
-        $criteria['object'] = $field->object;
-
-        return $resource->read($criteria);
+        return $field->readFromStripe($this->objectId ?: self::DEFAULT_ID);
     }
 }

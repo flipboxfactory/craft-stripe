@@ -23,5 +23,10 @@ interface ConnectionInterface
     /**
      * @return string|null
      */
+    public function getWebhookSigningSecret();
+
+    /**
+     * @return string|null
+     */
     public function getVersion();
 }

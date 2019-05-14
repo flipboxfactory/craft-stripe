@@ -9,13 +9,11 @@
 namespace flipbox\craft\stripe\criteria;
 
 use craft\helpers\Json;
-use flipbox\craft\ember\objects\ElementAttributeTrait;
-use flipbox\craft\ember\objects\FieldAttributeTrait;
-use flipbox\craft\ember\objects\SiteAttributeTrait;
 use flipbox\craft\stripe\Stripe;
+use Psr\SimpleCache\InvalidArgumentException;
 use Stripe\Error\Base;
 use Stripe\StripeObject;
-use yii\base\BaseObject;
+use yii\base\Component;
 
 /**
  * $criteria = (new \flipbox\craft\stripe\criteria\Criteria())
@@ -33,15 +31,13 @@ use yii\base\BaseObject;
  * @author Flipbox Factory <hello@flipboxfactory.com>
  * @since 1.0.0
  */
-class Criteria extends BaseObject
+class Criteria extends Component
 {
     use ConnectionTrait,
         CacheTrait,
-        IdAttributeFromElementTrait,
-        PayloadAttributeFromElementTrait,
-        ElementAttributeTrait,
-        FieldAttributeTrait,
-        SiteAttributeTrait;
+        IdAttributeTrait,
+        PayloadAttributeTrait,
+        AllCriteriaTrait;
 
     /**
      * @return string|null
@@ -74,51 +70,67 @@ class Criteria extends BaseObject
      *
      * @param \Closure $callback
      * @return StripeObject|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function request(\Closure $callback)
     {
-        if (null === ($key = $this->getCacheKey())) {
-            return $this->resource($callback);
-        }
+        try {
+            if (null === ($key = $this->getCacheKey())) {
+                return $this->resource($callback);
+            }
 
-        // If it's cached
-        if (null !== ($value = $this->getCache()->get($key))) {
+            // If it's cached
+            if (null !== ($value = $this->getCache()->get($key))) {
+                Stripe::info(
+                    sprintf(
+                        "Item found in cache. [key: %s, type: %s]",
+                        $key,
+                        get_class($this->getCache())
+                    )
+                );
+
+                return StripeObject::constructFrom(
+                    $value,
+                    $this->getRequestOptions()
+                );
+            }
+
             Stripe::info(
                 sprintf(
-                    "Item found in cache. [key: %s, type: %s]",
+                    "Item not found in cache. [key: %s, type: %s]",
                     $key,
                     get_class($this->getCache())
                 )
             );
 
-            return StripeObject::constructFrom(
-                $value,
-                $this->getRequestOptions()
+            $object = $this->resource($callback);
+
+            $this->getCache()->set($key, $object ? $object->jsonSerialize() : null);
+
+            Stripe::info(
+                sprintf(
+                    "Save item to cache. [key: %s, type: %s]",
+                    $key,
+                    get_class($this->getCache())
+                )
+            );
+
+            return $object;
+        } catch (InvalidArgumentException $e) {
+            Stripe::warning(
+                sprintf(
+                    "InvalidArgumentException caught while trying to run '%s'.  Exception: [%s].",
+                    __METHOD__,
+                    (string)\yii\helpers\Json::encode([
+                        'Trace' => $e->getTraceAsString(),
+                        'File' => $e->getFile(),
+                        'Line' => $e->getLine(),
+                        'Code' => $e->getCode(),
+                        'Message' => $e->getMessage()
+                    ])
+                ),
+                'cache'
             );
         }
-
-        Stripe::info(
-            sprintf(
-                "Item not found in cache. [key: %s, type: %s]",
-                $key,
-                get_class($this->getCache())
-            )
-        );
-
-        $object = $this->resource($callback);
-
-        $this->getCache()->set($key, $object ? $object->jsonSerialize() : null);
-
-        Stripe::info(
-            sprintf(
-                "Save item to cache. [key: %s, type: %s]",
-                $key,
-                get_class($this->getCache())
-            )
-        );
-
-        return $object;
     }
 
     /**
@@ -126,38 +138,56 @@ class Criteria extends BaseObject
      *
      * @param \Closure $callback
      * @return StripeObject|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function mutate(\Closure $callback)
     {
-        // Failed
-        if (null === ($object = $this->resource($callback))) {
+        try {
+            // Failed
+            if (null === ($object = $this->resource($callback))) {
+                return $object;
+            }
+
+            if (null === ($key = $this->getCacheKey())) {
+                return $object;
+            }
+
+            if ($this->getCache()->delete($key)) {
+                Stripe::info(
+                    sprintf(
+                        "Item removed from cache successfully. [key: %s, type: %s]",
+                        $key,
+                        get_class($this->getCache())
+                    )
+                );
+            } else {
+                Stripe::info(
+                    sprintf(
+                        "Item not removed from cache. [key: %s, type: %s]",
+                        $key,
+                        get_class($this->getCache())
+                    )
+                );
+            }
+
             return $object;
-        }
-
-        if (null === ($key = $this->getCacheKey())) {
-            return $object;
-        }
-
-        if ($this->getCache()->delete($key)) {
-            Stripe::info(
+        } catch (InvalidArgumentException $e) {
+            Stripe::warning(
                 sprintf(
-                    "Item removed from cache successfully. [key: %s, type: %s]",
-                    $key,
-                    get_class($this->getCache())
-                )
-            );
-        } else {
-            Stripe::info(
-                sprintf(
-                    "Item not removed from cache. [key: %s, type: %s]",
-                    $key,
-                    get_class($this->getCache())
-                )
+                    "InvalidArgumentException caught while trying to run '%s'.  Exception: [%s].",
+                    __METHOD__,
+                    (string)\yii\helpers\Json::encode([
+                        'Trace' => $e->getTraceAsString(),
+                        'File' => $e->getFile(),
+                        'Line' => $e->getLine(),
+                        'Code' => $e->getCode(),
+                        'Message' => $e->getMessage()
+                    ])
+                ),
+                'cache'
             );
         }
 
-        return $object;
+        return null;
     }
 
     /**
