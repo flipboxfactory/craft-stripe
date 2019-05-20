@@ -88,10 +88,7 @@ class Criteria extends Component
                     )
                 );
 
-                return StripeObject::constructFrom(
-                    $value,
-                    $this->getRequestOptions()
-                );
+                return $value;
             }
 
             Stripe::info(
@@ -104,7 +101,7 @@ class Criteria extends Component
 
             $object = $this->resource($callback);
 
-            $this->getCache()->set($key, $object ? $object->jsonSerialize() : null);
+            $this->getCache()->set($key, $object ?: null);
 
             Stripe::info(
                 sprintf(
@@ -144,7 +141,7 @@ class Criteria extends Component
         try {
             // Failed
             if (null === ($object = $this->resource($callback))) {
-                return $object;
+                return null;
             }
 
             if (null === ($key = $this->getCacheKey())) {
@@ -199,7 +196,6 @@ class Criteria extends Component
         try {
             return $callback();
         } catch (Base $e) {
-
             Stripe::warning(
                 sprintf(
                     "Exception caught. Exception: [%s].",

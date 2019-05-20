@@ -8,7 +8,6 @@
 
 namespace flipbox\craft\stripe\fields;
 
-use flipbox\craft\stripe\criteria\CustomerCriteria;
 use flipbox\craft\stripe\Stripe;
 use Stripe\ApiResource;
 use Stripe\Customer;
@@ -54,7 +53,7 @@ class Customers extends Objects
         array $payload,
         string $id = null
     ): ApiResource {
-        return (new CustomerCriteria())
+        return Stripe::criteria(Customer::class)
             ->setField($this)
             ->setConnection($this->getConnection())
             ->setCache($this->getCache())
@@ -72,11 +71,12 @@ class Customers extends Objects
     public function readFromStripe(
         string $id
     ): ApiResource {
-        return (new CustomerCriteria())
+        return Stripe::criteria(Customer::class)
             ->setField($this)
             ->setConnection($this->getConnection())
             ->setCache($this->getCache())
             ->setId($id)
-            ->read();
+            ->retrieve();
+
     }
 }

@@ -20,8 +20,8 @@ use craft\web\View;
 use flipbox\craft\ember\helpers\UrlHelper;
 use flipbox\craft\ember\modules\LoggerTrait;
 use flipbox\craft\psr3\Logger;
-use flipbox\craft\stripe\criteria\Criteria as BaseCriteria;
 use flipbox\craft\stripe\criteria\Criteria;
+use flipbox\craft\stripe\criteria\ElementCriteria;
 use flipbox\craft\stripe\criteria\ResourceBehavior;
 use flipbox\craft\stripe\fields\Customers as ObjectsField;
 use flipbox\craft\stripe\models\Settings as SettingsModel;
@@ -179,14 +179,15 @@ class Stripe extends Plugin
 
     /**
      * @param string $resource
-     * @return Criteria|ResourceBehavior
+     * @param string|null $criteria
+     * @return Criteria|ElementCriteria|ResourceBehavior
      * @throws \yii\base\InvalidConfigException
      */
-    public static function criteria(string $resource): Criteria
+    public static function criteria(string $resource, string $criteria = ElementCriteria::class): Criteria
     {
         return Craft::createObject([
-            'class' => Criteria::class,
-            'as behaviorName' => [
+            'class' => $criteria,
+            'as resource' => [
                 'class' => ResourceBehavior::class,
                 'resource' => $resource
             ]
