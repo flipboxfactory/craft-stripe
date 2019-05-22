@@ -287,7 +287,11 @@ class Stripe extends Plugin
 
                 // SETTINGS
                 'stripe/settings' => 'stripe/cp/settings/view/general/index',
-                'stripe/settings/limits' => 'stripe/cp/settings/view/limits/index',
+
+                // API: DEBUG
+                'stripe/api' => 'stripe/cp/view/api/index',
+                'stripe/api/collection' => 'stripe/cp/view/api/collection',
+                'stripe/api/item' => 'stripe/cp/view/api/item',
 
                 // SETTINGS: CONNECTIONS
                 'stripe/settings/connections' => 'stripe/cp/settings/view/connections/index',

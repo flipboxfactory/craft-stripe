@@ -287,6 +287,7 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
             return false;
         };
 
+        /** @var ObjectAssociation[] $association */
         $associations = ArrayHelper::index($query->all(), 'objectId');
 
         if (!array_key_exists($id, $associations)) {
@@ -305,6 +306,32 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
         return true;
     }
 
+    /**
+     * @param ElementInterface|Element $element
+     * @param string $id
+     * @return bool
+     * @throws \Throwable
+     */
+    public function removeAssociation(
+        ElementInterface $element,
+        string $id
+    ) {
+        /** @var IntegrationAssociationQuery $query */
+        if (null === ($query = $element->getFieldValue($this->handle))) {
+            Stripe::warning("Field is not available on element.");
+            return false;
+        };
+
+        /** @var ObjectAssociation[] $association */
+        $associations = ArrayHelper::index($query->all(), 'objectId');
+
+        if ($association = ArrayHelper::remove($associations, $id)) {
+            $query->setCachedResult(array_values($associations));
+            return $association->delete();
+        }
+
+        return true;
+    }
 
     /**
      * @param ElementInterface|Element $element

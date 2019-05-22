@@ -1,0 +1,45 @@
+{% extends "stripe/_cp/settings/_layout" %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerJsFile("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js") %}
+{% do view.registerCssFile("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css") %}
+{% js %}
+    hljs.initHighlightingOnLoad();
+{% endjs %}
+{% css %}
+    .hljs {
+        background: none;
+        padding: 0;
+    }
+    .breakall {
+        word-break: break-all;
+    }
+{% endcss %}
+
+{% set content %}
+    {% if results %}
+        <pre><code id="query-results" class="json">{{ results }}</code></pre>
+    {% else %}
+        No results were found
+    {% endif %}
+{% endset %}
+
+{% block details %}
+    <div id="settings" class="meta">
+        <form>
+            {{ forms.textField({
+                label: "Object"|t('stripe'),
+                id: 'object',
+                class: 'code',
+                name: 'object',
+                value: craft.app.request.getQueryParam('object'),
+                required: true
+            }) }}
+
+            <input type="submit" value="Send" class="btn submit" />
+        </form>
+    </div>
+
+    {% hook 'stripe.api.edit.sidebar' %}
+
+{% endblock %}

@@ -9,7 +9,6 @@
 namespace flipbox\craft\stripe\models;
 
 use craft\base\Model;
-use flipbox\craft\ember\helpers\ModelHelper;
 use flipbox\craft\stripe\helpers\TransformerHelper;
 use flipbox\craft\stripe\services\Cache;
 use flipbox\craft\stripe\services\Connections;
@@ -147,7 +146,7 @@ class Settings extends Model
                     ],
                     'safe',
                     'on' => [
-                        ModelHelper::SCENARIO_DEFAULT
+                        static::SCENARIO_DEFAULT
                     ]
                 ]
             ]

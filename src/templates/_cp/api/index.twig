@@ -1,0 +1,8 @@
+{% extends "stripe/_cp/settings/_layout" %}
+{% import "_includes/forms" as forms %}
+
+{% set content %}
+    <a href="{{ url(baseCpPath ~ '/item') }}">Item</a>
+    or
+    <a href="{{ url(baseCpPath ~ '/collection') }}">Collection</a>
+{% endset %}
