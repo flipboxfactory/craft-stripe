@@ -111,8 +111,10 @@ class Stripe extends Plugin
             [self::class, 'onRegisterCpUrlRules']
         );
 
-        // Make sure we have a table
-        ObjectAssociation::ensureEnvironmentTableExists();
+        // Make sure we have an objects table
+        if ($this->isInstalled) {
+            ObjectAssociation::ensureEnvironmentTableExists();
+        }
 
         /*******************************************
          * BOOTSTRAP SDK
