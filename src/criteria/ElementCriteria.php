@@ -23,5 +23,4 @@ class ElementCriteria extends Criteria
         ElementAttributeTrait,
         FieldAttributeTrait,
         SiteAttributeTrait;
-
 }

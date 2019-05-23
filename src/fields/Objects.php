@@ -180,7 +180,6 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
         );
 
         try {
-
             $object = $this->upsertToStripe($payload, $id);
 
             if (empty($objectId)) {
@@ -193,7 +192,6 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
             }
 
             return true;
-
         } catch (\Exception $e) {
             call_user_func_array(
                 new PopulateElementErrorsFromUpsertResponse(),
@@ -229,7 +227,6 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
         }
 
         try {
-
             $object = $this->readFromStripe($id);
 
             // Get callable used to populate element
@@ -256,7 +253,6 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
             }
 
             return Craft::$app->getElements()->saveElement($element);
-
         } catch (\Exception $e) {
             call_user_func_array(
                 new PopulateElementErrorsFromUpsertResponse(),

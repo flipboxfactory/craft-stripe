@@ -71,7 +71,7 @@ class ApiController extends AbstractController
 
                 if ($collection instanceof Collection) {
                     /** @var StripeObject $object */
-                    foreach($collection->getIterator() as $object) {
+                    foreach ($collection->getIterator() as $object) {
                         $results[] = $object->jsonSerialize();
                     }
 
@@ -100,7 +100,6 @@ class ApiController extends AbstractController
         $results = null;
 
         if (null !== ($criteria = $this->createCriteria())) {
-
             $criteria->setId((string) Craft::$app->getRequest()->getQueryParam('id'));
 
             $object = $criteria->retrieve();
@@ -139,7 +138,7 @@ class ApiController extends AbstractController
 
             if ($collection instanceof Collection) {
                 /** @var StripeObject $object */
-                foreach($collection->getIterator() as $object) {
+                foreach ($collection->getIterator() as $object) {
                     $results[] = $object->jsonSerialize();
                 }
 

@@ -77,6 +77,5 @@ class Customers extends Objects
             ->setCache($this->getCache())
             ->setId($id)
             ->retrieve();
-
     }
 }

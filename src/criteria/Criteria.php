@@ -56,10 +56,11 @@ class Criteria extends Component
         $connection = $this->getConnection();
 
         return array_filter(
-            array_merge([
+            array_merge(
+                [
                 'api_key' => $connection->getApiKey(),
                 'stripe_version' => $connection->getVersion(),
-            ],
+                ],
                 $options
             )
         );
@@ -208,7 +209,8 @@ class Criteria extends Component
                         'StripeCode' => $e->getStripeCode(),
                         'StripeRequestId' => $e->getRequestId()
                     ])
-                ), 'Criteria'
+                ),
+                'Criteria'
             );
         }
 

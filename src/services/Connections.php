@@ -78,7 +78,6 @@ class Connections extends IntegrationConnections
             Stripe::setApiKey($connection->getApiKey());
             Stripe::setApiVersion($connection->getVersion());
         } catch (\Exception $e) {
-
             StripePlugin::warning(sprintf(
                 "Exception caught while trying to set default connection. Exception: [%s].",
                 (string)Json::encode([

@@ -42,8 +42,6 @@ class AssociateObject extends AssociateIntegration
 
             return true;
         } catch (\Exception $e) {
-
-
         }
 
         return false;

@@ -38,7 +38,6 @@ class WebhooksController
             $response = $this->processWebHook(
                 $this->resolveConnection()
             );
-
         } catch (\Throwable $exception) {
             $message = 'Exception while processing webhook: ' . $exception->getMessage() . "\n";
             $message .= 'Exception thrown in ' . $exception->getFile() . ':' . $exception->getLine() . "\n";
