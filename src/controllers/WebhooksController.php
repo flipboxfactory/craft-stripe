@@ -10,6 +10,7 @@ namespace flipbox\craft\stripe\controllers;
 
 use Craft;
 use craft\helpers\Json;
+use craft\web\Controller;
 use craft\web\Response as WebResponse;
 use flipbox\craft\stripe\connections\ConnectionInterface;
 use flipbox\craft\stripe\events\ReceiveWebhookEvent;
@@ -17,7 +18,7 @@ use flipbox\craft\stripe\Stripe;
 use Stripe\Webhook;
 use yii\web\Response;
 
-class WebhooksController
+class WebhooksController extends Controller
 {
     /**
      * @inheritdoc
@@ -78,8 +79,12 @@ class WebhooksController
         $stripeSignature = $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '';
 
         if (!$secret || !$stripeSignature) {
-            Stripe::warning('Webhook not signed or signing secret not set.', 'webhook');
-            $response->data = 'ok';
+            $message = 'Webhook not signed or signing secret not set.';
+
+            $response->setStatusCode(400);
+            $response->data = $message;
+
+            Stripe::warning($message, 'webhook');
 
             return $response;
         }
@@ -88,8 +93,12 @@ class WebhooksController
             // Check the payload and signature
             $event = Webhook::constructEvent($rawData, $stripeSignature, $secret);
         } catch (\Exception $exception) {
-            Stripe::warning('Webhook signature check failed: ' . $exception->getMessage(), 'webhook');
-            $response->data = 'ok';
+            $message = 'Webhook signature check failed: ' . $exception->getMessage();
+
+            $response->setStatusCode(400);
+            $response->data = $message;
+
+            Stripe::warning($message, 'webhook');
 
             return $response;
         }

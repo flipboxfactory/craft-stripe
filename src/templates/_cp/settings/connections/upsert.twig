@@ -118,7 +118,6 @@
             errors: connection.getErrors('enabled')
         }) }}
     </div>
-
     {% if connection.id %}
         <hr>
         <div class="meta read-only">
@@ -130,6 +129,12 @@
                 <h5 class="heading">{{ "Updated at"|t('app') }}</h5>
                 <div class="value">{{ connection.dateUpdated|datetime('short') }}</div>
             </div>
+        </div>
+
+        <hr>
+        <div class="meta read-only">
+            <h5 class="heading">{{ "Webhook Url"|t('app') }}</h5>
+            <div class="value">{{ actionUrl('stripe/webhooks/process-webhook', {connection: connection.handle}) }}</div>
         </div>
     {% endif %}
 
