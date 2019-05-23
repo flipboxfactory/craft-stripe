@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## Unreleased
+## 1.0.1 - 2019-05-23
 ### Added
 - Webhook controller and reference in CP
 
