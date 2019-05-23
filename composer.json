@@ -15,7 +15,7 @@
     "craftcms/cms": "^3.0.14",
     "stripe/stripe-php": "^6.0",
     "flipboxfactory/craft-ember": "^2.1",
-    "flipboxfactory/craft-integration": "^2.2",
+    "flipboxfactory/craft-integration": "^2.2.2",
     "flipboxfactory/craft-psr3": "^1.1"
   },
   "require-dev": {
