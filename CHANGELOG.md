@@ -1,5 +1,8 @@
 Changelog
 =========
+## 1.1.0 - 2019-08-12
+### Added
+- Fields have `pushToStripe` and `pullFromStripe` methods which assist in working with the Stripe API.
 
 ## 1.0.1 - 2019-05-23
 ### Added

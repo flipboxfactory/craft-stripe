@@ -148,18 +148,21 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
 
 
     /*******************************************
-     * SYNC TO
+     * PUSH TO
      *******************************************/
 
     /**
-     * @inheritdoc
+     * @param ElementInterface $element
+     * @param string|null $objectId
+     * @param null $transformer
+     * @return ApiResource|null
      * @throws \Throwable
      */
-    public function syncToStripe(
+    public function pushToStripe(
         ElementInterface $element,
         string $objectId = null,
         $transformer = null
-    ): bool {
+    ) {
         /** @var Element $element */
 
         $id = $objectId ?: $this->resolveObjectIdFromElement($element);
@@ -185,13 +188,15 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
             if (empty($objectId)) {
                 if (null === ($objectId = $object->id)) {
                     Stripe::error("Unable to determine object id from response");
-                    return false;
+                    return null;
                 }
 
-                return $this->addAssociation($element, $objectId);
+                if (!$this->addAssociation($element, $objectId)) {
+                    return null;
+                }
             }
 
-            return true;
+            return $object;
         } catch (\Exception $e) {
             call_user_func_array(
                 new PopulateElementErrorsFromUpsertResponse(),
@@ -203,27 +208,30 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
             );
         }
 
-        return false;
+        return null;
     }
 
     /*******************************************
-     * SYNC FROM
+     * PULL FROM
      *******************************************/
 
     /**
-     * @@inheritdoc
+     * @param ElementInterface $element
+     * @param string|null $objectId
+     * @param null $transformer
+     * @return ApiResource|null
      * @throws \Throwable
      */
-    public function syncFromStripe(
+    public function pullFromStripe(
         ElementInterface $element,
         string $objectId = null,
         $transformer = null
-    ): bool {
+    ) {
 
         $id = $objectId ?: $this->resolveObjectIdFromElement($element);
 
         if (null === $id) {
-            return false;
+            return null;
         }
 
         try {
@@ -252,7 +260,12 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
                 );
             }
 
-            return Craft::$app->getElements()->saveElement($element);
+            if (!Craft::$app->getElements()->saveElement($element)) {
+                return null;
+            }
+
+            return $object;
+
         } catch (\Exception $e) {
             call_user_func_array(
                 new PopulateElementErrorsFromUpsertResponse(),
@@ -264,7 +277,40 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
             );
         }
 
-        return false;
+        return null;
+    }
+
+
+    /*******************************************
+     * SYNC TO
+     *******************************************/
+
+    /**
+     * @inheritdoc
+     * @throws \Throwable
+     */
+    public function syncToStripe(
+        ElementInterface $element,
+        string $objectId = null,
+        $transformer = null
+    ): bool {
+        return $this->pushToStripe($element, $objectId, $transformer) !== null;
+    }
+
+    /*******************************************
+     * SYNC FROM
+     *******************************************/
+
+    /**
+     * @@inheritdoc
+     * @throws \Throwable
+     */
+    public function syncFromStripe(
+        ElementInterface $element,
+        string $objectId = null,
+        $transformer = null
+    ): bool {
+        return $this->pullFromStripe($element, $objectId, $transformer) !== null;
     }
 
     /**

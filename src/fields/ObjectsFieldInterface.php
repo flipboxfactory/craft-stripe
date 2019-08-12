@@ -30,6 +30,30 @@ interface ObjectsFieldInterface extends FieldInterface
      * @param ElementInterface $element
      * @param string|null $objectId
      * @param callable|array|string $transformer
+     * @return ApiResource|null
+     */
+    public function pullFromStripe(
+        ElementInterface $element,
+        string $objectId = null,
+        $transformer = null
+    );
+
+    /**
+     * @param ElementInterface $element
+     * @param string|null $objectId
+     * @param callable|array|string $transformer
+     * @return ApiResource|null
+     */
+    public function pushToStripe(
+        ElementInterface $element,
+        string $objectId = null,
+        $transformer = null
+    ) ;
+
+    /**
+     * @param ElementInterface $element
+     * @param string|null $objectId
+     * @param callable|array|string $transformer
      * @return bool
      */
     public function syncFromStripe(
