@@ -10,12 +10,12 @@ namespace flipbox\craft\stripe\actions\webhook;
 
 use Craft;
 use craft\helpers\Json;
-use craft\web\Response;
 use flipbox\craft\stripe\connections\ConnectionInterface;
 use flipbox\craft\stripe\events\ReceiveWebhookEvent;
 use flipbox\craft\stripe\Stripe;
 use Stripe\Event;
 use yii\base\Action;
+use yii\web\Response;
 
 abstract class AbstractWebhook extends Action
 {
