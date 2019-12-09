@@ -1,9 +1,12 @@
 Changelog
 =========
 
-## Unreleased
+## 1.2.0 - 2019-12-09
 ### Added
 - Webhooks actions (so they can be easily used outside of plugin)
+
+### Updated
+- Craft dependency version to 3.2.x to support new testing framework
 
 ## 1.1.0 - 2019-08-12
 ### Added
