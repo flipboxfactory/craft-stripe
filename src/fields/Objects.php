@@ -265,7 +265,6 @@ abstract class Objects extends Integrations implements ObjectsFieldInterface
             }
 
             return $object;
-
         } catch (\Exception $e) {
             call_user_func_array(
                 new PopulateElementErrorsFromUpsertResponse(),

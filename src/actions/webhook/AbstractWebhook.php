@@ -67,7 +67,6 @@ abstract class AbstractWebhook extends Action
                 $this->resolveConnection()
             );
         } catch (\Throwable $e) {
-
             Stripe::error(
                 sprintf(
                     "Exception caught while trying to process webhook. Exception: [%s].",

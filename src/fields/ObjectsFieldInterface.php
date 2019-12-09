@@ -48,7 +48,7 @@ interface ObjectsFieldInterface extends FieldInterface
         ElementInterface $element,
         string $objectId = null,
         $transformer = null
-    ) ;
+    );
 
     /**
      * @param ElementInterface $element
