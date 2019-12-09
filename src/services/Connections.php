@@ -20,7 +20,7 @@ use yii\helpers\Json;
  * @since 1.0.0
  *
  * @method ConnectionInterface|null find(string $handle, bool $enabledOnly = true)
- * @method ConnectionInterface get()
+ * @method ConnectionInterface get(string $handle, bool $enabledOnly = true)
  */
 class Connections extends IntegrationConnections
 {

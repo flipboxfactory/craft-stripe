@@ -1,5 +1,10 @@
 Changelog
 =========
+
+## Unreleased
+### Added
+- Webhooks actions (so they can be easily used outside of plugin)
+
 ## 1.1.0 - 2019-08-12
 ### Added
 - Fields have `pushToStripe` and `pullFromStripe` methods which assist in working with the Stripe API.
