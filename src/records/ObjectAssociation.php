@@ -13,6 +13,7 @@ use flipbox\craft\integration\records\IntegrationAssociation;
 use flipbox\craft\stripe\fields\Objects;
 use flipbox\craft\stripe\migrations\ObjectAssociations;
 use flipbox\craft\stripe\Stripe;
+use yii\db\MigrationInterface;
 
 /**
  * @author Flipbox Factory <hello@flipboxfactory.com>
@@ -50,7 +51,7 @@ class ObjectAssociation extends IntegrationAssociation
     /**
      * @inheritdoc
      */
-    protected static function createEnvironmentTableMigration()
+    protected static function createEnvironmentTableMigration(): MigrationInterface
     {
         return new ObjectAssociations();
     }
