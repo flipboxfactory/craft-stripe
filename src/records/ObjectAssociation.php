@@ -43,7 +43,7 @@ class ObjectAssociation extends IntegrationAssociation
     /**
      * @inheritdoc
      */
-    protected static function environmentTableAlias()
+    protected static function environmentTableAlias(): string
     {
         return static::TABLE_ALIAS . Stripe::getInstance()->getSettings()->environmentTableSuffix;
     }
