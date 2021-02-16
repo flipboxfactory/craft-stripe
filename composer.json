@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/craft-stripe",
   "description": "Stripe Integration for Craft CMS",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "craft-plugin",
   "license": "proprietary",
   "keywords": [
