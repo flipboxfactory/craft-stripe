@@ -6,7 +6,7 @@
  * @link       https://www.flipboxfactory.com/software/force/
  */
 
-namespace flipbox\craft\stripe\actions\widgets;
+namespace flipbox\craft\stripe\cp\actions\widgets;
 
 use Craft;
 use craft\base\ElementInterface;
